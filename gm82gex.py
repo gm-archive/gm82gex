@@ -245,9 +245,11 @@ def get_extensions_path():
         directory = winreg.QueryValueEx(key, "Directory")[0]
         winreg.CloseKey(key)
     else:
-        with open(os.path.expanduser("~/.wine/user.reg")) as f:
+        wineprefix = os.getenv("WINEPREFIX")
+        if wineprefix is None: wineprefix = os.path.expanduser("~/.wine")
+        with open(f"{wineprefix}/user.reg") as f:
             key = re.search(r'\[Software\\\\Game Maker\\\\Version 8\.2\\\\Preferences\][^[]+', f.read()).group(0)
-            directory = re.search(r'"Directory"="(.+)"', key).group(1).replace('C:', os.path.expanduser('~/.wine/drive_c')).replace('\\\\', '/')
+            directory = re.search(r'"Directory"="(.+)"', key).group(1).replace('C:', f'{wineprefix}/drive_c').replace('\\\\', '/')
     return os.path.join(directory, "extensions")
 
 def main():
